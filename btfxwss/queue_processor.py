@@ -4,6 +4,7 @@ from threading import Thread, Event
 from queue import Empty
 from multiprocessing import Queue
 from collections import defaultdict
+from functools import partial
 
 # Import Third-Party
 
@@ -22,7 +23,7 @@ class QueueProcessor(Thread):
     ( BTCUSD, ETHBTC, etc).
 
     """
-    def __init__(self, data_q, log_level=None,
+    def __init__(self, data_q, log_level=None, max_queue_size=5,
                  *args, **kwargs):
         """Initialze a QueueProcessor instance.
 
@@ -56,12 +57,12 @@ class QueueProcessor(Thread):
 
         # Keeps track of last update to a channel by id.
         self.last_update = {}
-        self.tickers = defaultdict(Queue)
-        self.books = defaultdict(Queue)
-        self.raw_books = defaultdict(Queue)
-        self.trades = defaultdict(Queue)
-        self.candles = defaultdict(Queue)
-        self.account = Queue()
+        self.tickers = defaultdict(partial(Queue, max_queue_size))
+        self.books = defaultdict(partial(Queue, max_queue_size))
+        self.raw_books = defaultdict(partial(Queue, max_queue_size))
+        self.trades = defaultdict(partial(Queue, max_queue_size))
+        self.candles = defaultdict(partial(Queue, max_queue_size))
+        self.account = Queue(max_queue_size)
 
         # Sentinel Event to kill the thread
         self._stopped = Event()

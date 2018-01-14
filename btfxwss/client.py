@@ -29,7 +29,7 @@ class BtfxWss:
     Data can be accessed using the provided methods.
     """
 
-    def __init__(self, key=None, secret=None, log_level=None, **wss_kwargs):
+    def __init__(self, key=None, secret=None, log_level=None, max_queue_size=5, **wss_kwargs):
         """
         Initializes BtfxWss Instance.
         :param key: Api Key as string
@@ -42,7 +42,9 @@ class BtfxWss:
         self.conn = WebSocketConnection(log_level=log_level,
                                         **wss_kwargs)
         self.queue_processor = QueueProcessor(self.conn.q,
-                                              log_level=log_level)
+                                              log_level=log_level,
+                                              max_queue_size=max_queue_size,
+                                              )
 
     ##############
     # Properties #
